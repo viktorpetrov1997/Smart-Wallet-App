@@ -33,6 +33,7 @@ public class Wallet
 
     @Column(nullable = false)
     private Currency currency;
+
     @Column(nullable = false)
     private LocalDateTime createdOn;
 
