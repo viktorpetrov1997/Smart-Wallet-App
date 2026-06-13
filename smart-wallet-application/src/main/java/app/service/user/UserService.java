@@ -2,6 +2,7 @@ package app.service.user;
 
 import app.mapper.user.UserMapper;
 import app.model.dto.user.UserDto;
+import app.model.dto.user.UserLoginRequest;
 import app.model.dto.user.UserRegisterRequest;
 import app.model.entity.subscription.Subscription;
 import app.model.entity.user.User;
@@ -14,6 +15,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class UserService
@@ -30,6 +32,19 @@ public class UserService
         this.passwordEncoder = passwordEncoder;
         this.subscriptionService = subscriptionService;
         this.walletService = walletService;
+    }
+
+    public UserDto login(UserLoginRequest userLoginRequest)
+    {
+        Optional<User> optionalUser = userRepository.findByUsername(userLoginRequest.getUsername());
+
+        if(optionalUser.isEmpty() || !passwordEncoder.matches(userLoginRequest.getPassword(),
+                optionalUser.get().getPassword()))
+        {
+            throw new RuntimeException("Username or password mismatch!");
+        }
+
+        return UserMapper.toUserDto(optionalUser.get());
     }
 
     public UserDto register(UserRegisterRequest userRegisterRequest)
