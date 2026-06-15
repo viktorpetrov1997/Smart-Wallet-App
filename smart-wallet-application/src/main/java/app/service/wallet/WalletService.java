@@ -8,6 +8,7 @@ import app.model.entity.wallet.Wallet;
 import app.model.entity.wallet.WalletStatus;
 import app.repository.wallet.WalletRepository;
 import app.service.transaction.TransactionService;
+import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -17,6 +18,7 @@ import java.util.Optional;
 import java.util.UUID;
 
 @Service
+@Transactional
 public class WalletService
 {
     private WalletRepository walletRepository;
@@ -88,6 +90,67 @@ public class WalletService
         walletRepository.save(wallet);
 
         return wallet;
+    }
+
+    public Transaction charge(User user, UUID walledId, BigDecimal amount, String chargeDescription)
+    {
+        Optional<Wallet> optionalWallet = walletRepository.findById(walledId);
+
+        if(optionalWallet.isEmpty())
+        {
+            throw new RuntimeException("Wallet with id [%s] not found.".formatted(walledId));
+        }
+
+        Wallet wallet = optionalWallet.get();
+
+        if(wallet.getStatus().equals(WalletStatus.INACTIVE))
+        {
+            return transactionService.createNewTransaction(
+                    wallet.getOwner(),
+                    wallet.getId().toString(),
+                    user.getUsername(),
+                    amount,
+                    wallet.getBalance(),
+                    wallet.getCurrency(),
+                    TransactionType.WITHDRAWAL,
+                    TransactionStatus.FAILED,
+                    chargeDescription,
+                    "Wallet is inactive. Please contact support for more details."
+            );
+        }
+
+        if(wallet.getBalance().compareTo(amount) < 0)
+        {
+            return transactionService.createNewTransaction(
+                    wallet.getOwner(),
+                    wallet.getId().toString(),
+                    user.getUsername(),
+                    amount,
+                    wallet.getBalance(),
+                    wallet.getCurrency(),
+                    TransactionType.WITHDRAWAL,
+                    TransactionStatus.FAILED,
+                    chargeDescription,
+                    "Insufficient funds. Please top up your wallet and try again."
+            );
+        }
+
+        wallet.setBalance(wallet.getBalance().subtract(amount));
+        wallet.setUpdatedOn(LocalDateTime.now());
+        walletRepository.save(wallet);
+
+        return transactionService.createNewTransaction(
+                wallet.getOwner(),
+                wallet.getId().toString(),
+                user.getUsername(),
+                amount,
+                wallet.getBalance(),
+                wallet.getCurrency(),
+                TransactionType.WITHDRAWAL,
+                TransactionStatus.SUCCEEDED,
+                chargeDescription,
+                null
+        );
     }
 
 //    public void createNewWallet(User user)
