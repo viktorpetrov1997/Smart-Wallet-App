@@ -1,6 +1,7 @@
 package app.service.user;
 
 import app.mapper.user.UserMapper;
+import app.model.dto.user.EditUserRequest;
 import app.model.dto.user.UserDto;
 import app.model.dto.user.UserLoginRequest;
 import app.model.dto.user.UserRegisterRequest;
@@ -17,6 +18,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 @Service
 @Transactional
@@ -77,5 +79,29 @@ public class UserService
     public List<UserDto> findAll()
     {
         return userRepository.findAll().stream().map(UserMapper::toUserDto).toList();
+    }
+
+    public UserDto getById(UUID id)
+    {
+        User user = userRepository.findById(id)
+                .orElseThrow(
+                        () -> new RuntimeException("User with id [%s] does not exist.".formatted(id)));
+        return UserMapper.toUserDto(user);
+    }
+
+    public UserDto update(String id, EditUserRequest editUserRequest)
+    {
+        User entity = userRepository.findById(UUID.fromString(id))
+                .orElseThrow(
+                        () -> new RuntimeException("User with id [%s] does not exist.".formatted(id)));
+
+        entity.setFirstName(editUserRequest.getFirstName());
+        entity.setLastName(editUserRequest.getLastName());
+        entity.setProfilePicture(editUserRequest.getProfilePicture());
+        entity.setEmail(editUserRequest.getEmail());
+
+        User updatedUser = userRepository.save(entity);
+
+        return UserMapper.toUserDto(updatedUser);
     }
 }

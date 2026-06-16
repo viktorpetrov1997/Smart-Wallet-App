@@ -1,5 +1,6 @@
 package app.web;
 
+import app.model.dto.user.UserDto;
 import app.model.dto.user.UserLoginRequest;
 import app.model.dto.user.UserRegisterRequest;
 import app.service.user.UserService;
@@ -40,9 +41,13 @@ public class IndexController
     @PostMapping("/login")
     public ModelAndView login(@ModelAttribute UserLoginRequest userLoginRequest)
     {
-        userService.login(userLoginRequest);
+        UserDto user = userService.login(userLoginRequest);
 
-        return new ModelAndView("redirect:/home");
+        ModelAndView modelAndView = new ModelAndView();
+        modelAndView.setViewName("home");
+        modelAndView.addObject("user", user);
+
+        return modelAndView;
     }
 
     @GetMapping("/home")

@@ -16,6 +16,23 @@ import java.util.List;
 @NoArgsConstructor
 public class UserMapper
 {
+    public static User toEntity(UserDto userDto)
+    {
+        return User.builder()
+                .id(userDto.getId())
+                .username(userDto.getUsername())
+                .firstName(userDto.getFirstName())
+                .lastName(userDto.getLastName())
+                .profilePicture(userDto.getProfilePicture())
+                .email(userDto.getEmail())
+                .country(userDto.getCountry())
+                .role(userDto.getRole())
+                .isActive(userDto.isActive())
+                .createdOn(userDto.getCreatedOn())
+                .updatedOn(userDto.getUpdatedOn())
+                .build();
+    }
+
     public static User toUserEntity(UserRegisterRequest userRegisterRequest)
     {
         if(userRegisterRequest == null) return null;
