@@ -7,10 +7,12 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class SubscriptionMapper
 {
-    public static SubscriptionDto toSubscriptionDto(Subscription subscription)
+    public static SubscriptionDto toDto(Subscription subscription)
     {
-        if(subscription == null) return null;
-
+        if(subscription == null)
+        {
+            return null;
+        }
         return SubscriptionDto.builder()
                 .id(subscription.getId())
                 .owner(subscription.getOwner())

@@ -24,9 +24,7 @@ public class UserController
     public ModelAndView profile(@PathVariable String id)
     {
         UserDto user = userService.getById(UUID.fromString(id));
-
         ModelAndView modelAndView = new ModelAndView();
-
         modelAndView.setViewName("profile-menu");
         modelAndView.addObject("user", user);
 
@@ -34,7 +32,7 @@ public class UserController
     }
 
     @PutMapping("/{id}/profile")
-    public ModelAndView profile(@PathVariable  String id, @ModelAttribute EditUserRequest editUserRequest)
+    public ModelAndView profile(@PathVariable String id, @ModelAttribute EditUserRequest editUserRequest)
     {
         UserDto updatedUser = userService.update(id, editUserRequest);
 
@@ -43,5 +41,28 @@ public class UserController
         modelAndView.addObject("user", updatedUser);
 
         return modelAndView;
+    }
+
+    @GetMapping()
+    public ModelAndView getAllUsers()
+    {
+        ModelAndView modelAndView = new ModelAndView();
+        modelAndView.setViewName("users");
+        modelAndView.addObject("users", userService.getAllUsers());
+        return modelAndView;
+    }
+
+    @PutMapping("/{id}/status")
+    public ModelAndView switchUserStatus(@PathVariable String id)
+    {
+        userService.switchStatus(UUID.fromString(id));
+        return new ModelAndView("redirect:/users");
+    }
+
+    @PutMapping("/{id}/role")
+    public ModelAndView switchUserRole(@PathVariable String id)
+    {
+        userService.switchRole(UUID.fromString(id));
+        return new ModelAndView("redirect:/users");
     }
 }

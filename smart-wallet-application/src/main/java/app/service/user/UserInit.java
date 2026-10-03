@@ -13,7 +13,6 @@ import java.util.List;
 @Component
 public class UserInit implements CommandLineRunner
 {
-
     private final UserService userService;
 
     public UserInit(UserService userService)
@@ -25,7 +24,6 @@ public class UserInit implements CommandLineRunner
     public void run(String... args) throws Exception
     {
         List<UserDto> users = userService.findAll();
-
         if(!users.isEmpty())
         {
             return;
@@ -34,13 +32,11 @@ public class UserInit implements CommandLineRunner
         UserRegisterRequest userRegisterRequest = UserRegisterRequest.builder()
                 .username("defaultUser")
                 .password("defaultPassword")
-                .country(Country.BULGARIA)
-                .build();
+                .country(Country.BULGARIA).build();
 
         //TODO: create registerAdmin method
         userService.register(userRegisterRequest);
 
-        log.info("Default user created with username [%s] and password [%s].".formatted(
-                userRegisterRequest.getUsername(), userRegisterRequest.getPassword()));
+        log.info("Default user created with username [%s] and password [%s].".formatted(userRegisterRequest.getUsername(), userRegisterRequest.getPassword()));
     }
 }

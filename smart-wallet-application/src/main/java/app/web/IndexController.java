@@ -3,10 +3,13 @@ package app.web;
 import app.model.dto.user.UserDto;
 import app.model.dto.user.UserLoginRequest;
 import app.model.dto.user.UserRegisterRequest;
+import app.service.user.AuthenticationUserDetails;
 import app.service.user.UserService;
+import jakarta.validation.Valid;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.servlet.ModelAndView;
 
@@ -33,27 +36,9 @@ public class IndexController
 
         ModelAndView modelAndView = new ModelAndView();
         modelAndView.setViewName("login");
-        modelAndView.addObject("userLoginData", userLoginRequest);
+        modelAndView.addObject("userLoginRequest", userLoginRequest);
 
         return modelAndView;
-    }
-
-    @PostMapping("/login")
-    public ModelAndView login(@ModelAttribute UserLoginRequest userLoginRequest)
-    {
-        UserDto user = userService.login(userLoginRequest);
-
-        ModelAndView modelAndView = new ModelAndView();
-        modelAndView.setViewName("home");
-        modelAndView.addObject("user", user);
-
-        return modelAndView;
-    }
-
-    @GetMapping("/home")
-    public ModelAndView getHomePage()
-    {
-        return new ModelAndView("home");
     }
 
     @GetMapping("/register")
@@ -69,10 +54,33 @@ public class IndexController
     }
 
     @PostMapping("/register")
-    public ModelAndView registerUser(@ModelAttribute UserRegisterRequest userRegisterRequest)
+    public ModelAndView registerUser(@Valid UserRegisterRequest userRegisterRequest, BindingResult bindingResult)
     {
+        if(bindingResult.hasErrors())
+        {
+            ModelAndView modelAndView = new ModelAndView();
+            modelAndView.setViewName("register");
+            return modelAndView;
+        }
+
         userService.register(userRegisterRequest);
 
         return new ModelAndView("redirect:/login");
+    }
+
+    @GetMapping("/home")
+    public ModelAndView getHomePage(@AuthenticationPrincipal AuthenticationUserDetails principal)
+    {
+        //        AuthenticationUserDetails principal = (AuthenticationUserDetails) SecurityContextHolder
+        //                .getContext()
+        //                .getAuthentication()
+        //                .getPrincipal();
+
+        UserDto user = userService.getById(principal.getId());
+
+        ModelAndView modelAndView = new ModelAndView("home");
+        modelAndView.addObject("user", user);
+
+        return modelAndView;
     }
 }

@@ -35,7 +35,10 @@ public class UserMapper
 
     public static User toUserEntity(UserRegisterRequest userRegisterRequest)
     {
-        if(userRegisterRequest == null) return null;
+        if (userRegisterRequest == null)
+        {
+            return null;
+        }
 
         return User.builder()
                 .username(userRegisterRequest.getUsername())
@@ -50,11 +53,20 @@ public class UserMapper
 
     public static UserDto toUserDto(User user)
     {
-        if(user == null) return null;
+        if(user == null)
+        {
+            return null;
+        }
 
-        List<SubscriptionDto> subscriptionDtoList = user.getSubscriptions().stream().map(SubscriptionMapper::toSubscriptionDto).toList();
+        List<SubscriptionDto> subscriptionDtoList = user
+                .getSubscriptions()
+                .stream().map(SubscriptionMapper::toDto)
+                .toList();
 
-        List<WalletDto> walletDtoList = user.getWallets().stream().map(WalletMapper::toWalletDto).toList();
+        List<WalletDto> walletDtoList = user
+                .getWallets()
+                .stream().map(WalletMapper::toDto)
+                .toList();
 
         return UserDto.builder()
                 .id(user.getId())
@@ -63,8 +75,8 @@ public class UserMapper
                 .lastName(user.getLastName())
                 .profilePicture(user.getProfilePicture())
                 .email(user.getEmail())
-                .role(user.getRole())
                 .country(user.getCountry())
+                .role(user.getRole())
                 .isActive(user.isActive())
                 .createdOn(user.getCreatedOn())
                 .updatedOn(user.getUpdatedOn())

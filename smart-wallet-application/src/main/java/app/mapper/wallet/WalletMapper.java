@@ -7,9 +7,12 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class WalletMapper
 {
-    public static WalletDto toWalletDto(Wallet wallet)
+    public static WalletDto toDto(Wallet wallet)
     {
-        if(wallet == null) return null;
+        if(wallet == null)
+        {
+            return null;
+        }
 
         return WalletDto.builder()
                 .id(wallet.getId())

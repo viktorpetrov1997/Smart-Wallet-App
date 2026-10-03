@@ -16,20 +16,12 @@ import java.util.UUID;
 public class SubscriptionDto
 {
     private UUID id;
-
     private User owner;
-
     private SubscriptionStatus status;
-
     private SubscriptionPeriod period;
-
     private SubscriptionType type;
-
     private BigDecimal price;
-
     private boolean renewalAllowed;
-
     private LocalDateTime createdOn;
-
     private LocalDateTime completedOn;
 }

@@ -6,9 +6,9 @@ import app.model.entity.subscription.SubscriptionStatus;
 import app.model.entity.subscription.SubscriptionType;
 import app.model.entity.user.User;
 import app.repository.subscription.SubscriptionRepository;
-import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -17,7 +17,7 @@ import java.time.LocalDateTime;
 @Transactional
 public class SubscriptionService
 {
-    private SubscriptionRepository subscriptionRepository;
+    SubscriptionRepository subscriptionRepository;
 
     @Autowired
     public SubscriptionService(SubscriptionRepository subscriptionRepository)
@@ -31,17 +31,16 @@ public class SubscriptionService
 
         Subscription subscription = Subscription.builder()
                 .owner(user)
-                .status(SubscriptionStatus.ACTIVE)
                 .period(SubscriptionPeriod.MONTHLY)
+                .status(SubscriptionStatus.ACTIVE)
                 .type(SubscriptionType.DEFAULT)
                 .price(BigDecimal.valueOf(0.00))
+                .completedOn(now.plusMonths(1))
                 .renewalAllowed(true)
                 .createdOn(now)
-                .completedOn(now.plusMonths(1))
                 .build();
 
-
-        // TODO: Log some proper info message
+        //TODO: Log some proper info message
         subscriptionRepository.save(subscription);
 
         return subscription;

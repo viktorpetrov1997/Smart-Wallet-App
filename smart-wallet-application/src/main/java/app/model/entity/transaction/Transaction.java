@@ -1,6 +1,5 @@
 package app.model.entity.transaction;
 
-import app.model.entity.user.User;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -24,7 +23,7 @@ public class Transaction
 
     @ManyToOne
     @JoinColumn(name = "owner_id")
-    private User owner;
+    private app.model.entity.user.User owner;
 
     @Column(nullable = false)
     private String sender;

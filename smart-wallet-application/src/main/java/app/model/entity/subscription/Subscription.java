@@ -14,7 +14,7 @@ import java.util.UUID;
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
-@Table(name = "subscriptions")
+@Table(name = "subscription")
 public class Subscription
 {
     @Id
@@ -37,7 +37,7 @@ public class Subscription
     @Enumerated(EnumType.STRING)
     private SubscriptionType type;
 
-    @Column(nullable = false, precision = 10, scale = 2)
+    @Column(nullable = false)
     private BigDecimal price;
 
     @Column(nullable = false)
